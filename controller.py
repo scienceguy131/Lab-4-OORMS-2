@@ -15,7 +15,9 @@
     Modified by: OCdt Al-Ansar Mohammed, OCdt Liethan Velasco
 
     Notes:
-        1 - loll just migrating the comments from lab 3's controller.py :))
+        1 - A few minor code changes were made in this module, ie. creating objects
+        first before passing them into arguments, rather than declaring the object
+        within a methods arguments. This is done so that creating the sequence diagrams is more clear.
 
 
 """
@@ -119,8 +121,10 @@ class OrderController(Controller):
         # Setting the "to be ordered" items to ordered status.
         self.order.place_new_orders()
 
-        # Different way to write it again, but basically changes the view back to the table selected
-        self.view.set_controller(TableController(self.view, self.restaurant, self.table))
+        # Creating the table controller object and switching the controller back
+        # in the view:ServerView to the created table controller
+        table_controller = TableController(self.view, self.restaurant, self.table);
+        self.view.set_controller(table_controller)
 
         # Huh, this is a new one, but I'm guessing this also updates all the views, including RestaurantView
         # and the KitchenView
@@ -137,8 +141,12 @@ class OrderController(Controller):
         # Removing the list of items under "to be ordered" status
         self.order.remove_unordered_items()
 
-        # Switching the current controller in ServerView back to TableController. Doing it same way in update_order()
-        self.view.set_controller(TableController(self.view, self.restaurant, self.table))
+        # Creating the table controller object and switching the controller back
+        # in the view:ServerView to the created table controller
+        table_controller = TableController(self.view, self.restaurant, self.table);
+        self.view.set_controller(table_controller)
+
+        # Updating the RestaurantView and KithcenView windows
         self.restaurant.notify_views()
 
 

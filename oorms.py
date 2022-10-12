@@ -22,6 +22,7 @@
     Status:
         - Velasco and Mohammed (October 7, 2022) COMPLETED - ish: worked on the warmup of part 1
         - Velasco (October 12, 2022) COMPLETED: Beginning comment migration from lab 3 into code here
+        - Velasco (October 12, 2022) : Beginning sequence diagram #2
 
 """
 
@@ -264,8 +265,10 @@ class ServerView(RestaurantView):
             if item.can_be_cancelled():
 
                 # This is our job :))
-                def handler(_, cancelled_item=item):
+                def handler(_, cancelled_item = item):
+
                     # TODO: call appropriate method on controller to remove item from order
+
                     pass
 
                 # Making the button
