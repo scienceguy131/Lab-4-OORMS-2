@@ -155,8 +155,29 @@ class OrderItem:
 
         # TODO: need to represent item state, not just ordered
 
+        # --------------- Code added here ---------------
+
+        # Alright it's gonna be a little messy here, but whatever.
+
+        # We should have three different states that tells KitchenView what the next action of a certain order item:
+        # display "START COOKING", "MARK AS READY" OR "MARK AS SERVED"
+
+        # Let's use a string for now, and perhaps find cleaner methods to do this functionality,
+        # (I swear there was a way for us to create our own "literals", like TO_COOK or something.
+        # I know we definitely did it last year in C with O'Handley)
+
+        # Let's have these as the states based off of the lab instructions:
+        # "PLACED" => "START COOKING"       <-- This is the default upon instantiation
+        # "COOKED" => "MARK AS READY"
+        # "READY" => "MARK AS SERVED"
+
+        self.status = "PLACED";
+
+        # -----------------------------------------------
+
         self.details = menu_item
         self.__ordered = False
+
 
     def mark_as_ordered(self):
         """ Sets the self.ordered instance boolean var to true.  """
@@ -176,6 +197,23 @@ class OrderItem:
 
         # TODO: correct implementation based on item state
         return True
+
+
+    # ------------- Creating more methods here ----------------
+
+    def set_status_cooked(self):
+        """ Method sets the status of this item object to "finished_cooking". """
+        self.status = "COOKED";
+
+    def set_status_ready(self):
+        """ Method sets the status of this item object to "ready_and_served". """
+        self.status = "READY";
+
+    def get_status(self):
+        """ Method returns the current status of this item object. """
+        return self.status;
+
+    # ------------------------------------------------------
 
 
 class MenuItem:

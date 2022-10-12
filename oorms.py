@@ -309,16 +309,61 @@ class KitchenView(RestaurantView):
 
                 # Ahh so here's the part that creates the buttons to cook and process orders
                 for order in table.orders:
+
                     for item in order.items:
+
                         if item.has_been_ordered() and not item.has_been_served():
 
-                            # TODO: compute button text based on current state of order
-                            button_text = 'poo poo pee pee haha'
+                            """ Alright so my deduction is that at this point, all orders showing up
+                            in this window here have been placed - yet, they haven't either begun 
+                            COOKING or READY TO BE SERVED. 
+                            
+                            Based on the video, when an order gets placed, its status goes from
+                            "START COOKING" to "MARK AS READY" to "MARK AS SERVED". 
+                            
+                            I guess that's the three of our states we need to implement into the OrderItem class. 
+                            
+                            """
 
-                            # lol here's another handler for us
+                            # ---------------- Adding code here ----------------
+
+                            # First, get status of the current order
+                            curr_stat = item.get_status();
+
+                            button_text = "To be replaced";
+
+                            # Next, compute the button_text (which displays the next
+                            # action for the given order item) depending on the curr_stat using match block
+                            match curr_stat:
+
+                                case "PLACED":
+                                    button_text = "START COOKING";
+
+                                case "COOKED":
+                                    button_text = "MARK AS READY";
+
+                                case "READY":
+                                    button_text = "MARK AS SERVED";
+
+
+
+                            # Okay for now, we will have the handler simply update the status of the
+                            # order item. If status is "READY", remove item on button press. It doesn't work ://
                             def handler(_, order_item=item):
-                                # TODO: call appropriate method on handler
-                                pass
+
+                                match curr_stat:
+
+                                    case "PLACED":
+                                        item.set_status_cooked();
+
+                                    case "COOKED":
+                                        item.set_status_ready();
+
+                                    case "READY":
+                                        order.items.remove_item(item);
+
+                            # --------------------------------------------------
+
 
                             # Creating the buttons for each of the orders
                             self._make_button(button_text, handler,
