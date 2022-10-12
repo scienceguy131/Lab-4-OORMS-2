@@ -153,12 +153,16 @@ class OrderController(Controller):
 class KitchenController(Controller):
     """ Well, here's the newest Controller subclass that we need to implement :)). """
 
-    # Utilizes parent constructor
 
     def create_ui(self):
         """ Creates the user interface of the KitchenController. Damn, pretty half-assed docstring this is xD. """
         self.view.create_kitchen_order_ui()
 
     # TODO: implement a method to handle button presses on the KitchenView
+
+    #OHH SHIT OH FUICK I FOUND HOW TO DO IT
+    def button_pressed(self, this_order):
+        pass;
+
 
     # Ahhh I see what we have to do here.

@@ -64,8 +64,6 @@ class RestaurantView(tk.Frame, ABC):
         # Adding this RestaurantView object to the collection of views in the restaurant model
         self.restaurant.add_view(self)
 
-
-
         # Hmmm, this ones new. I'm guessing it does involve switching the controllers
         self.controller = controller_class(self, restaurant)
         self.controller.create_ui()

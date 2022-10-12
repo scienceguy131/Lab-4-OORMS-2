@@ -201,6 +201,8 @@ class OrderItem:
 
     # ------------- Creating more methods here ----------------
 
+    # TODO - Encapsulate next two methods into one called "advanced_status()"
+
     def set_status_cooked(self):
         """ Method sets the status of this item object to "finished_cooking". """
         self.status = "COOKED";
