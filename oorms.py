@@ -21,7 +21,7 @@
 
     Status:
         - Velasco and Mohammed (October 7, 2022) COMPLETED - ish: worked on the warmup of part 1
-        - Velasco (October 12, 2022): Beginning comment migration from lab 3 into code here
+        - Velasco (October 12, 2022) COMPLETED: Beginning comment migration from lab 3 into code here
 
 """
 
