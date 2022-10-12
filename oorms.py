@@ -351,16 +351,21 @@ class KitchenView(RestaurantView):
                             # order item. If status is "READY", remove item on button press. It doesn't work ://
                             def handler(_, order_item=item):
 
-                                match curr_stat:
+                                # match curr_stat:
+                                #
+                                #     case "PLACED":
+                                #         item.set_status_cooked();
+                                #
+                                #     case "COOKED":
+                                #         item.set_status_ready();
+                                #
+                                #     case "READY":
+                                #         order.items.remove_item(item);
 
-                                    case "PLACED":
-                                        item.set_status_cooked();
+                                # TODO - ohhh i must be dumb. We have to write code here for th KitchenController object
+                                # for the shit in here.
 
-                                    case "COOKED":
-                                        item.set_status_ready();
-
-                                    case "READY":
-                                        order.items.remove_item(item);
+                                pass;
 
                             # --------------------------------------------------
 

@@ -160,3 +160,5 @@ class KitchenController(Controller):
         self.view.create_kitchen_order_ui()
 
     # TODO: implement a method to handle button presses on the KitchenView
+
+    # Ahhh I see what we have to do here.
