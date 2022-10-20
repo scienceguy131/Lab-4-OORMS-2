@@ -187,33 +187,30 @@ class OrderItem:
         """ Returns True if this OrderItem has been ordered. Returns False otherwise. """
         return self.__ordered
 
-    def has_been_served(self):
+    def has_been_served(self): # Changed
         """ I'm guessing we have this return True if been ordered, False otherwise. """
-        # TODO: correct implementation based on item state
-        return False
+        return self.status == "SERVED";
 
     def can_be_cancelled(self):
-        """ I'm guessing we have this return Ture if can be cancelled. False otherwise. """
+        """ I'm guessing we have this return True if can be cancelled. False otherwise. """
 
-        # TODO: correct implementation based on item state
+        # TODO: When are going to decide when order can still be cancelled?
         return True
 
 
     # ------------- Creating more methods here ----------------
 
-    # TODO - Encapsulate next two methods into one called "advanced_status()"
+    def advance_status(self):
+        """ Method advances current status of current item (PLACED --> COOKED --> READY --> SERVED). """
 
-    def set_status_cooked(self):
-        """ Method sets the status of this item object to "finished_cooking". """
-        self.status = "COOKED";
+        match self.status:
 
-    def set_status_ready(self):
-        """ Method sets the status of this item object to "ready_and_served". """
-        self.status = "READY";
-
-    def get_status(self):
-        """ Method returns the current status of this item object. """
-        return self.status;
+            case "PLACED":
+                self.status = "COOKED";
+            case "COOKED":
+                self.status = "READY";
+            case "READY":
+                self.status = "SERVED";  # OrderItem should disappear form view after this
 
     # ------------------------------------------------------
 

@@ -162,7 +162,9 @@ class KitchenController(Controller):
 
     #OHH SHIT OH FUICK I FOUND HOW TO DO IT
     def button_pressed(self, this_order):
-        pass;
+        """ Advances status of order item pressed, so far that's it. """
+
+        this_order.advance_status();
 
 
     # Ahhh I see what we have to do here.

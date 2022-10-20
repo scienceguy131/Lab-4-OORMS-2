@@ -312,14 +312,9 @@ class KitchenView(RestaurantView):
 
                         if item.has_been_ordered() and not item.has_been_served():
 
-                            """ Alright so my deduction is that at this point, all orders showing up
-                            in this window here have been placed - yet, they haven't either begun 
-                            COOKING or READY TO BE SERVED. 
+                            """ 
                             
-                            Based on the video, when an order gets placed, its status goes from
-                            "START COOKING" to "MARK AS READY" to "MARK AS SERVED". 
-                            
-                            I guess that's the three of our states we need to implement into the OrderItem class. 
+                            Status of the OrderItems: PLACED -> COOKED -> READY -> SERVED
                             
                             """
 
