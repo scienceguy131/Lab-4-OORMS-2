@@ -265,7 +265,8 @@ class ServerView(RestaurantView):
                 # This is our job :))
                 def handler(_, cancelled_item = item):
 
-                    # TODO: call appropriate method on controller to remove item from order
+                    #  Removing item from the unordered items
+                    self.controller.remove_spec_item(cancelled_item);
 
                     pass
 
@@ -311,10 +312,17 @@ class KitchenView(RestaurantView):
                     for item in order.items:
 
                         if item.has_been_ordered() and not item.has_been_served():
-
                             """ 
                             
                             Status of the OrderItems: PLACED -> COOKED -> READY -> SERVED
+                            
+                            When an item is first ordered, it gets put into the KitchenView with a 
+                            status of PLACED. 
+                            
+                            As the button to the left of it gets pressed, its status gets advanced.
+                            
+                            Once a given OrderItem object reaches the SERVED status, then it gets
+                            removed from the KitchenView on the next update of the UI.
                             
                             """
 
@@ -339,28 +347,10 @@ class KitchenView(RestaurantView):
                                     button_text = "MARK AS SERVED";
 
 
-
-                            # Okay for now, we will have the handler simply update the status of the
-                            # order item. If status is "READY", remove item on button press. It doesn't work ://
+                            # Have the handler call the button_pressed() method of the KitchenController object,
+                            # passing in the item whose button has been pressed.
                             def handler(_, order_item=item):
-
-                                # match curr_stat:
-                                #
-                                #     case "PLACED":
-                                #         item.set_status_cooked();
-                                #
-                                #     case "COOKED":
-                                #         item.set_status_ready();
-                                #
-                                #     case "READY":
-                                #         order.items.remove_item(item);
-
-                                # TODO - ohhh i must be dumb. We have to write code here for th KitchenController object
-                                # for the shit in here.
-
-                                pass;
-
-                            # --------------------------------------------------
+                                self.controller.button_pressed(item);
 
 
                             # Creating the buttons for each of the orders

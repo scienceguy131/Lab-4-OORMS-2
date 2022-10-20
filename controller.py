@@ -149,6 +149,21 @@ class OrderController(Controller):
         # Updating the RestaurantView and KithcenView windows
         self.restaurant.notify_views()
 
+    # ---------------------- Code that Velasco has added -------------------------
+
+    def remove_spec_item(self, this_item):
+        """ Method is responsible for removing a OrderItem this_item from the current order list -
+        happens when red 'X' button is pressed next to an order. """
+
+        # removing the item
+        self.order.remove_item(this_item);
+
+        # updating the ui
+        self.create_ui();
+
+
+
+
 
 class KitchenController(Controller):
     """ Well, here's the newest Controller subclass that we need to implement :)). """
@@ -160,11 +175,14 @@ class KitchenController(Controller):
 
     # TODO: implement a method to handle button presses on the KitchenView
 
-    #OHH SHIT OH FUICK I FOUND HOW TO DO IT
     def button_pressed(self, this_order):
-        """ Advances status of order item pressed, so far that's it. """
+        """ Advances status of order item pressed, then updates the Kitchen user interface. """
 
+        # Advance the order item's status
         this_order.advance_status();
 
+        # Update the KitchenView UI
+        self.create_ui();
 
-    # Ahhh I see what we have to do here.
+
+

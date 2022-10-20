@@ -212,6 +212,10 @@ class OrderItem:
             case "READY":
                 self.status = "SERVED";  # OrderItem should disappear form view after this
 
+    def get_status(self):
+        """ Method returns status of a given OrderItem. """
+        return self.status;
+
     # ------------------------------------------------------
 
 
