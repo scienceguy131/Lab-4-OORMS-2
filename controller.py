@@ -175,11 +175,18 @@ class KitchenController(Controller):
 
     # TODO: implement a method to handle button presses on the KitchenView
 
-    def button_pressed(self, this_order):
-        """ Advances status of order item pressed, then updates the Kitchen user interface. """
+    def button_pressed(self, this_order_item, this_order):
+        """ Advances status of order item pressed, removes it if necessary, then updates the Kitchen user interface. """
 
         # Advance the order item's status
-        this_order.advance_status();
+        this_order_item.advance_status();
+
+        # ------ Not sure if this is best spot to put it --------
+
+        # TODO: Fix this part here. Comment out to see what happens if needed.
+        #  Here, remove item from the order if its status becomes SERVED
+        if this_order_item.get_status() == "SERVED":
+            this_order.remove_item(this_order_item);
 
         # Update the KitchenView UI
         self.create_ui();

@@ -350,7 +350,7 @@ class KitchenView(RestaurantView):
                             # Have the handler call the button_pressed() method of the KitchenController object,
                             # passing in the item whose button has been pressed.
                             def handler(_, order_item=item):
-                                self.controller.button_pressed(item);
+                                self.controller.button_pressed(item, order);
 
 
                             # Creating the buttons for each of the orders
