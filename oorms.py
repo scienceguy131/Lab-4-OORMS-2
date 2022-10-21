@@ -33,11 +33,13 @@
 import math
 import tkinter as tk
 from abc import ABC
+import enum # remove ?
+
 
 # Importing from local modules
 from constants import *
 from controller import RestaurantController, KitchenController
-from model import Restaurant
+from model import Restaurant, Status #remove status question mark
 
 
 class RestaurantView(tk.Frame, ABC):
@@ -328,23 +330,13 @@ class KitchenView(RestaurantView):
 
                             # ---------------- Adding code here ----------------
 
-                            # First, get status of the current order
-                            curr_stat = item.get_status();
+                            # allows kitchen button text to change, but changes the wrong one
+                            #todo BUG - wrong status is changing
+                            button_options = ["START COOKING", "MARK AS READY", "MARK AS SERVED"]
 
-                            button_text = "To be replaced";
+                            button_text = button_options[item.get_status().value]
 
-                            # Next, compute the button_text (which displays the next
-                            # action for the given order item) depending on the curr_stat using match block
-                            match curr_stat:
 
-                                case "PLACED":
-                                    button_text = "START COOKING";
-
-                                case "COOKED":
-                                    button_text = "MARK AS READY";
-
-                                case "READY":
-                                    button_text = "MARK AS SERVED";
 
 
                             # Have the handler call the button_pressed() method of the KitchenController object,

@@ -159,7 +159,7 @@ class OrderController(Controller):
         self.order.remove_item(this_item);
 
         # updating the ui
-        self.create_ui();
+        self.restaurant.notify_views()
 
 
 

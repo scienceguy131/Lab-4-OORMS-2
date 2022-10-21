@@ -11,10 +11,19 @@
         - None for now :P.
 
 """
-
+import enum
 
 # ---- Importing from other modules -----
 from constants import TABLES, MENU_ITEMS
+
+
+# create enumeration for status
+#todo make section
+class Status(enum.Enum):
+    PLACED = 0
+    COOKED = 1
+    READY = 2
+    SERVED = 3
 
 # --------------- Defining the classes of the Restaurant objects -------------
 
@@ -171,7 +180,8 @@ class OrderItem:
         # "COOKED" => "MARK AS READY"
         # "READY" => "MARK AS SERVED"
 
-        self.status = "PLACED";
+        #inital status
+        self.status = Status.PLACED
 
         # -----------------------------------------------
 
@@ -189,7 +199,7 @@ class OrderItem:
 
     def has_been_served(self): # Changed
         """ I'm guessing we have this return True if been ordered, False otherwise. """
-        return self.status == "SERVED";
+        return self.status == "SERVED"
 
     def can_be_cancelled(self):
         """ I'm guessing we have this return True if can be cancelled. False otherwise. """
@@ -202,15 +212,10 @@ class OrderItem:
 
     def advance_status(self):
         """ Method advances current status of current item (PLACED --> COOKED --> READY --> SERVED). """
-
-        match self.status:
-
-            case "PLACED":
-                self.status = "COOKED";
-            case "COOKED":
-                self.status = "READY";
-            case "READY":
-                self.status = "SERVED";  # OrderItem should disappear form view after this
+        # refer to the tutorial point: https://www.tutorialspoint.com/enum-in-python
+        # self.status.value just gives the number associated with the current status, add one, then set self.status
+        # to the value corresponding with that number
+        self.status = Status(self.status.value + 1)
 
     def get_status(self):
         """ Method returns status of a given OrderItem. """
