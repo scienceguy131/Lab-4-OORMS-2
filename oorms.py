@@ -22,7 +22,12 @@
     Status:
         - Velasco and Mohammed (October 7, 2022) COMPLETED - ish: worked on the warmup of part 1
         - Velasco (October 12, 2022) COMPLETED: Beginning comment migration from lab 3 into code here
-        - Velasco (October 12, 2022) : Beginning sequence diagram #2
+        - Velasco (October 12, 2022) COMPLETED: Beginning sequence diagram #2
+        - Mohammed (October 21, 2022) COMPLETED: Bug fix in notify_views() made idk
+        - Velasco and Mohammed (October 21, 2022) COMPLETED: Beginning sequence diagram #3
+        - Velasco and Mohammed (October __ 2022): Beginning implemenatation of sequence diagram #4
+
+
 
 """
 
@@ -342,7 +347,7 @@ class KitchenView(RestaurantView):
                             # Have the handler call the button_pressed() method of the KitchenController object,
                             # passing in the item whose button has been pressed.
                             def handler(_, order_item=item):
-                                self.controller.button_pressed(item, order);
+                                self.controller.button_pressed(order_item, order);
 
 
                             # Creating the buttons for each of the orders
