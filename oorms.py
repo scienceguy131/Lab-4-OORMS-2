@@ -25,7 +25,11 @@
         - Velasco (October 12, 2022) COMPLETED: Beginning sequence diagram #2
         - Mohammed (October 21, 2022) COMPLETED: Bug fix in notify_views() made idk
         - Velasco and Mohammed (October 21, 2022) COMPLETED: Beginning sequence diagram #3
-        - Velasco and Mohammed (October __ 2022): Beginning implemenatation of sequence diagram #4
+        - Velasco and Mohammed (October 23 2022)COMPLETED: Beginning implementation of sequence diagram #4
+             - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
+        - Velasco (October __ 2022): Cleaning up the code
+        - __ (October __ 2022): Writing the 4 tests
+        - __ (October __ 2022): Writing the lab report
 
 
 
@@ -267,6 +271,7 @@ class ServerView(RestaurantView):
             self.canvas.create_oval(x0 - DOT_SIZE - DOT_MARGIN, y0, x0 - DOT_MARGIN, y0 + DOT_SIZE, **dot_style)
 
             # The code below is used to cancel an item made in an order
+            # --> Changed to only have the order be cancelled when in NOT ORDERED and PLACED states
             if item.can_be_cancelled():
 
                 # This is our job :))
@@ -314,6 +319,9 @@ class KitchenView(RestaurantView):
                 line += 1
 
                 # Ahh so here's the part that creates the buttons to cook and process orders
+
+                print('\n', '-' * 50, '\n');
+
                 for order in table.orders:
 
                     for item in order.items:
@@ -339,14 +347,16 @@ class KitchenView(RestaurantView):
                             #todo BUG - wrong status is changing
                             button_options = ["START COOKING", "MARK AS READY", "MARK AS SERVED"]
 
-                            button_text = button_options[item.get_status().value]
+                            # debug statement
+                            print(item.details.name + ": ", item.get_status());
 
+                            button_text = button_options[item.get_status().value]
 
 
 
                             # Have the handler call the button_pressed() method of the KitchenController object,
                             # passing in the item whose button has been pressed.
-                            def handler(_, order_item=item):
+                            def handler(_, order_item = item):
                                 self.controller.button_pressed(order_item, order);
 
 
