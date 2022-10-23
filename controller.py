@@ -181,15 +181,8 @@ class KitchenController(Controller):
         # Advance the order item's status
         this_order_item.advance_status();
 
-        # ------ Not sure if this is best spot to put it --------
-
-        # TODO: Fix this part here. Comment out to see what happens if needed.
-        #  Here, remove item from the order if its status becomes SERVED
-        if this_order_item.get_status() == "SERVED":
-            this_order.remove_item(this_order_item);
-
-        # Update the KitchenView UI
-        self.create_ui();
+        # Update the KitchenView UI and ServerViewUI
+        self.restaurant.notify_views();
 
 
 

@@ -19,7 +19,8 @@ from constants import TABLES, MENU_ITEMS
 
 # create enumeration for status
 #todo make section
-class Status(enum.Enum):
+class Status(enum.IntEnum):  # Changed to IntEnum - allows us to use int(Status.this_status) instead of .value
+    REQUESTED = -1              # Added new
     PLACED = 0
     COOKED = 1
     READY = 2
@@ -180,8 +181,8 @@ class OrderItem:
         # "COOKED" => "MARK AS READY"
         # "READY" => "MARK AS SERVED"
 
-        #inital status
-        self.status = Status.PLACED
+        # inital status - ADDED REQUESTED enum Status to -1
+        self.status = Status.REQUESTED;
 
         # -----------------------------------------------
 
@@ -193,19 +194,23 @@ class OrderItem:
         """ Sets the self.ordered instance boolean var to true.  """
         self.__ordered = True
 
+        # MADE A CHANGE HERE - advancing status to PLACED here
+        self.advance_status();
+
+
     def has_been_ordered(self):
         """ Returns True if this OrderItem has been ordered. Returns False otherwise. """
         return self.__ordered
 
     def has_been_served(self): # Changed
         """ I'm guessing we have this return True if been ordered, False otherwise. """
-        return self.status == "SERVED"
+        return self.status == Status.SERVED;
 
     def can_be_cancelled(self):
         """ I'm guessing we have this return True if can be cancelled. False otherwise. """
 
-        # TODO: When are going to decide when order can still be cancelled?
-        return True
+        # Set to
+        return int(self.status) <= int(Status.PLACED);
 
 
     # ------------- Creating more methods here ----------------
@@ -215,7 +220,8 @@ class OrderItem:
         # refer to the tutorial point: https://www.tutorialspoint.com/enum-in-python
         # self.status.value just gives the number associated with the current status, add one, then set self.status
         # to the value corresponding with that number
-        self.status = Status(self.status.value + 1)
+        self.status = Status(int(self.status) + 1)   # <-- Changed
+
 
     def get_status(self):
         """ Method returns status of a given OrderItem. """
