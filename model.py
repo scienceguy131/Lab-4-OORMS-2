@@ -11,10 +11,20 @@
         - None for now :P.
 
 """
-
+import enum
 
 # ---- Importing from other modules -----
 from constants import TABLES, MENU_ITEMS
+
+
+# create enumeration for status
+#todo make section
+class Status(enum.IntEnum):  # Changed to IntEnum - allows us to use int(Status.this_status) instead of .value
+    REQUESTED = -1              # Added new
+    PLACED = 0
+    COOKED = 1
+    READY = 2
+    SERVED = 3
 
 # --------------- Defining the classes of the Restaurant objects -------------
 
@@ -155,27 +165,69 @@ class OrderItem:
 
         # TODO: need to represent item state, not just ordered
 
+        # --------------- Code added here ---------------
+
+        # Alright it's gonna be a little messy here, but whatever.
+
+        # We should have three different states that tells KitchenView what the next action of a certain order item:
+        # display "START COOKING", "MARK AS READY" OR "MARK AS SERVED"
+
+        # Let's use a string for now, and perhaps find cleaner methods to do this functionality,
+        # (I swear there was a way for us to create our own "literals", like TO_COOK or something.
+        # I know we definitely did it last year in C with O'Handley)
+
+        # Let's have these as the states based off of the lab instructions:
+        # "PLACED" => "START COOKING"       <-- This is the default upon instantiation
+        # "COOKED" => "MARK AS READY"
+        # "READY" => "MARK AS SERVED"
+
+        # inital status - ADDED REQUESTED enum Status to -1
+        self.status = Status.REQUESTED;
+
+        # -----------------------------------------------
+
         self.details = menu_item
         self.__ordered = False
+
 
     def mark_as_ordered(self):
         """ Sets the self.ordered instance boolean var to true.  """
         self.__ordered = True
 
+        # MADE A CHANGE HERE - advancing status to PLACED here
+        self.advance_status();
+
+
     def has_been_ordered(self):
         """ Returns True if this OrderItem has been ordered. Returns False otherwise. """
         return self.__ordered
 
-    def has_been_served(self):
+    def has_been_served(self): # Changed
         """ I'm guessing we have this return True if been ordered, False otherwise. """
-        # TODO: correct implementation based on item state
-        return False
+        return self.status == Status.SERVED;
 
     def can_be_cancelled(self):
-        """ I'm guessing we have this return Ture if can be cancelled. False otherwise. """
+        """ I'm guessing we have this return True if can be cancelled. False otherwise. """
 
-        # TODO: correct implementation based on item state
-        return True
+        # Set to
+        return int(self.status) <= int(Status.PLACED);
+
+
+    # ------------- Creating more methods here ----------------
+
+    def advance_status(self):
+        """ Method advances current status of current item (PLACED --> COOKED --> READY --> SERVED). """
+        # refer to the tutorial point: https://www.tutorialspoint.com/enum-in-python
+        # self.status.value just gives the number associated with the current status, add one, then set self.status
+        # to the value corresponding with that number
+        self.status = Status(int(self.status) + 1)   # <-- Changed
+
+
+    def get_status(self):
+        """ Method returns status of a given OrderItem. """
+        return self.status;
+
+    # ------------------------------------------------------
 
 
 class MenuItem:

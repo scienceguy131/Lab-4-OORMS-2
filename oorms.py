@@ -22,7 +22,16 @@
     Status:
         - Velasco and Mohammed (October 7, 2022) COMPLETED - ish: worked on the warmup of part 1
         - Velasco (October 12, 2022) COMPLETED: Beginning comment migration from lab 3 into code here
-        - Velasco (October 12, 2022) : Beginning sequence diagram #2
+        - Velasco (October 12, 2022) COMPLETED: Beginning sequence diagram #2
+        - Mohammed (October 21, 2022) COMPLETED: Bug fix in notify_views() made idk
+        - Velasco and Mohammed (October 21, 2022) COMPLETED: Beginning sequence diagram #3
+        - Velasco and Mohammed (October 23 2022)COMPLETED: Beginning implementation of sequence diagram #4
+             - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
+        - Velasco (October __ 2022): Cleaning up the code
+        - __ (October __ 2022): Writing the 4 tests
+        - __ (October __ 2022): Writing the lab report
+
+
 
 """
 
@@ -33,11 +42,13 @@
 import math
 import tkinter as tk
 from abc import ABC
+import enum # remove ?
+
 
 # Importing from local modules
 from constants import *
 from controller import RestaurantController, KitchenController
-from model import Restaurant
+from model import Restaurant, Status #remove status question mark
 
 
 class RestaurantView(tk.Frame, ABC):
@@ -63,8 +74,6 @@ class RestaurantView(tk.Frame, ABC):
 
         # Adding this RestaurantView object to the collection of views in the restaurant model
         self.restaurant.add_view(self)
-
-
 
         # Hmmm, this ones new. I'm guessing it does involve switching the controllers
         self.controller = controller_class(self, restaurant)
@@ -262,12 +271,14 @@ class ServerView(RestaurantView):
             self.canvas.create_oval(x0 - DOT_SIZE - DOT_MARGIN, y0, x0 - DOT_MARGIN, y0 + DOT_SIZE, **dot_style)
 
             # The code below is used to cancel an item made in an order
+            # --> Changed to only have the order be cancelled when in NOT ORDERED and PLACED states
             if item.can_be_cancelled():
 
                 # This is our job :))
                 def handler(_, cancelled_item = item):
 
-                    # TODO: call appropriate method on controller to remove item from order
+                    #  Removing item from the unordered items
+                    self.controller.remove_spec_item(cancelled_item);
 
                     pass
 
@@ -308,17 +319,46 @@ class KitchenView(RestaurantView):
                 line += 1
 
                 # Ahh so here's the part that creates the buttons to cook and process orders
+
+                print('\n', '-' * 50, '\n');
+
                 for order in table.orders:
+
                     for item in order.items:
+
                         if item.has_been_ordered() and not item.has_been_served():
+                            """ 
+                            
+                            Status of the OrderItems: PLACED -> COOKED -> READY -> SERVED
+                            
+                            When an item is first ordered, it gets put into the KitchenView with a 
+                            status of PLACED. 
+                            
+                            As the button to the left of it gets pressed, its status gets advanced.
+                            
+                            Once a given OrderItem object reaches the SERVED status, then it gets
+                            removed from the KitchenView on the next update of the UI.
+                            
+                            """
 
-                            # TODO: compute button text based on current state of order
-                            button_text = 'poo poo pee pee haha'
+                            # ---------------- Adding code here ----------------
 
-                            # lol here's another handler for us
-                            def handler(_, order_item=item):
-                                # TODO: call appropriate method on handler
-                                pass
+                            # allows kitchen button text to change, but changes the wrong one
+                            #todo BUG - wrong status is changing
+                            button_options = ["START COOKING", "MARK AS READY", "MARK AS SERVED"]
+
+                            # debug statement
+                            print(item.details.name + ": ", item.get_status());
+
+                            button_text = button_options[item.get_status().value]
+
+
+
+                            # Have the handler call the button_pressed() method of the KitchenController object,
+                            # passing in the item whose button has been pressed.
+                            def handler(_, order_item = item):
+                                self.controller.button_pressed(order_item, order);
+
 
                             # Creating the buttons for each of the orders
                             self._make_button(button_text, handler,
