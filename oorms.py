@@ -61,7 +61,8 @@
           As previously mentioned, these status' were implemented using IntEnum constants, where REQUESTED is -1,
           PLACED is 0, up until SERVED is 3. Doing so also provides the ability to easily set the button text of a
           certain item, by storing the text in an array where the corresponding text of each status is placed at
-          the the respective indices (ie. "Mark as Served" at button_text[int(Status.COOKED)] ).
+          the the respective indices (ie. "Mark as Served" at button_text[int(Status.COOKED)] ). It also allows more
+          far more elegant methods of status comparisons among a few of the class methods.
 
 
     Status:
@@ -74,7 +75,7 @@
              - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
         - Velasco (October __ 2022): Cleaning up the code
             - (October 24, 2022) COMPLETED: Cleaning up oorms.py
-            - (October __, 2022): Cleaning up model.py
+            - (October __, 2022) COMPLETED: Cleaning up model.py
         - __ (October __ 2022): Writing the 4 tests
         - __ (October __ 2022): Writing the lab report
 
@@ -92,7 +93,7 @@ from abc import ABC
 
 from constants import *
 from controller import RestaurantController, KitchenController
-from model import Restaurant        # <-- Refer to Notes 2a for a comment
+from model import Restaurant  # Refer to Notes 2a for a comment
 
 
 # --------------------- Defining Abstract Classes ---------------------
@@ -104,7 +105,7 @@ class RestaurantView(tk.Frame, ABC):
     def __init__(self, master, restaurant, window_width, window_height, controller_class):
         """ Constructor to RestaurantView class. """
 
-        # Calling superclass constructor thats gives us the window for the view
+        # Calling superclass constructor that gives us the window to put the view in
         super().__init__(master)
 
         # Setting up the window for the server view using tkinter methods and objects.
@@ -147,6 +148,7 @@ class RestaurantView(tk.Frame, ABC):
     def set_controller(self, controller):
         """ Method switches current controller object to <controller> object passed through args. """
         self.controller = controller
+
 
 
 # --------------------- Defining Children Classes ---------------------
@@ -345,6 +347,7 @@ class ServerView(RestaurantView):
         self.canvas.create_text(x0, m + len(order.items) * h, text = f'Total: {order.total_cost():.2f}', anchor = tk.NW)
 
 
+
 class KitchenView(RestaurantView):
     """ Inherits RestaurantView superclass.
 
@@ -411,6 +414,9 @@ class KitchenView(RestaurantView):
         self.canvas.create_text(x, y, text = text, anchor = tk.W)
 
 
+
+
+
 # --------- Defining Separate Functions -----------
 
 def _scale_and_offset(x0, y0, width, height, offset_x0, offset_y0, scale):
@@ -419,6 +425,9 @@ def _scale_and_offset(x0, y0, width, height, offset_x0, offset_y0, scale):
             (offset_y0 + y0) * scale,
             (offset_x0 + x0 + width) * scale,
             (offset_y0 + y0 + height) * scale)
+
+
+
 
 # ----- Entry Point -----
 
