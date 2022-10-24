@@ -76,7 +76,7 @@
         - Velasco (October __ 2022): Cleaning up the code
             - (October 24, 2022) COMPLETED: Cleaning up oorms.py
             - (October 24, 2022) COMPLETED: Cleaning up model.py
-            - (October 24, 2022): Cleaning up controller.py
+            - (October 24, 2022) COMPLETED: Cleaning up controller.py
 
         - __ (October __ 2022): Writing the 4 tests
         - __ (October __ 2022): Writing the lab report
