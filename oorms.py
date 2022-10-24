@@ -73,7 +73,7 @@
         - Velasco and Mohammed (October 21, 2022) COMPLETED: Beginning sequence diagram #3
         - Velasco and Mohammed (October 23 2022)COMPLETED: Beginning implementation of sequence diagram #4
              - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
-        - Velasco (October __ 2022): Cleaning up the code
+        - Velasco COMPLETED (October 24 2022): Cleaning up the code
             - (October 24, 2022) COMPLETED: Cleaning up oorms.py
             - (October 24, 2022) COMPLETED: Cleaning up model.py
             - (October 24, 2022) COMPLETED: Cleaning up controller.py
