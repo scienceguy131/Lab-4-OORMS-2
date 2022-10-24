@@ -75,7 +75,9 @@
              - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
         - Velasco (October __ 2022): Cleaning up the code
             - (October 24, 2022) COMPLETED: Cleaning up oorms.py
-            - (October __, 2022) COMPLETED: Cleaning up model.py
+            - (October 24, 2022) COMPLETED: Cleaning up model.py
+            - (October 24, 2022): Cleaning up controller.py
+
         - __ (October __ 2022): Writing the 4 tests
         - __ (October __ 2022): Writing the lab report
 
@@ -398,7 +400,7 @@ class KitchenView(RestaurantView):
                             # Creating the handler for when the text button for item in KitchenView is touched.
                             # Refer to Notes 3 for a comment on this.
                             def handler(_, order_item = item):
-                                self.controller.button_pressed(order_item, order);
+                                self.controller.button_pressed(order_item);
 
                             # Creating the buttons for each of the orders
                             self._make_button(button_text, handler,

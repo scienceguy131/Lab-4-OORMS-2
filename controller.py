@@ -19,24 +19,28 @@
         first before passing them into arguments, rather than declaring the object
         within a methods arguments. This is done so that creating the sequence diagrams is more clear.
 
-
 """
 
-# ------ Defining the classes of controllers ---------
+# ------ Creating Abstract Controller Class ---------
 
 class Controller:
 
     def __init__(self, view, restaurant):
         """ Constructor of Controller object.
 
-        <view> is a ServerView object that handles all the drawing of the user interfaces, and <restaurant>
-        is a Restaurant object which contains all the data used to draw out the tables, chairs, and orders. """
+        <view> is a RestaurantView object that handles all the drawing of the user interfaces of its child classes,
+         and <restaurant> is a Restaurant object which contains all the data used to draw out the tables, chairs,
+         and orders. """
 
         self.view = view
         self.restaurant = restaurant
 
 
+
+# --------- Creating Child Controller Classes ---------
+
 class RestaurantController(Controller):
+    """ Controller for the restaurant view in the ServerView object. """
 
     # Uses its parents constructor
 
@@ -45,22 +49,24 @@ class RestaurantController(Controller):
         Essentially calls the method to draw the entire restaurant into the canvas. """
         self.view.create_restaurant_ui()
 
+
     def table_touched(self, table_number):
-        """ I'm guessing this method does the same from lab 3 - set's the controller of whatever current view is
-        active to the table that was touched. A little bit of a different way to write the code for it. """
+        """ Sets the current controller of the ServerView object to the TableController
+        associated with the table of <table_number>.  """
         self.view.set_controller(TableController(self.view, self.restaurant, self.restaurant.tables[table_number]))
         self.view.update()
 
 
+
 class TableController(Controller):
+    """ Controller for the view of a given table within the restaurant in the ServerView object. """
 
     def __init__(self, view, restaurant, table):
         """ Constructor of TableController object.
 
         <view> is a ServerView object that handles all the drawing of the user interfaces, <restaurant>
         is the Restaurant object which contains all the data used to draw out the tables, chairs, and orders,
-        <table> is a specific table object that was clicked on (TableController object only gets created
-        when that happens). """
+        <table> is a specific table object that was clicked on. """
 
         # Calling parent constructor
         super().__init__(view, restaurant)
@@ -68,22 +74,28 @@ class TableController(Controller):
         # Setting this object's table attribute to <table> passed through args
         self.table = table
 
+
+    # -------- Defining Methods --------
+
     def create_ui(self):
-        """ Calling .create_ui() method from this class back in the ServerView object calls the create_table_ui().
-        Essentially calls the method to draw the specific table selected and its associated chairs onto the canvas. """
+        """ Calling .create_ui() method calls the create_table_ui() back in the user interface.
+        Essentially draws the specific table and associated chairs of this TableController onto the canvas. """
         self.view.create_table_ui(self.table)
 
+
     def seat_touched(self, seat_number):
-        """ Different way to write it, but this method essentially changes the current controller to the
-        one associated with the seat touched so that it can open up the corresponding order menu. """
+        """ Sets the current controller of the ServerView window to be the OrderController associated with the
+        seat that just touched - opens up the order menu of the corresponding chair.  """
         self.view.set_controller(OrderController(self.view, self.restaurant, self.table, seat_number))
         self.view.update()
 
+
     def done(self):
-        """ Again, different way to write it, but the method switches the controller back to RestaurantController
-        so that we can now see the entire restaurant. """
+        """ Method returns the controller back to RestaurantController - setting the user interface back
+        to the view of the restaurant. """
         self.view.set_controller(RestaurantController(self.view, self.restaurant))
         self.view.update()
+
 
 
 class OrderController(Controller):
@@ -103,22 +115,30 @@ class OrderController(Controller):
         self.table = table
         self.order = self.table.order_for(seat_number)
 
+
+    # --------- Defining Methods ---------
+
     def create_ui(self):
-        """ Calling .create_ui() method from this class back in the ServerView object calls the create_order_ui().
-        Essentially calls the method to draw the order menu associated with the specific chair selected. """
+        """ Calling .create_ui() method calls the create_table_ui() back in the user interface.
+        Essentially draws the order menu associated with the specific chair touched onto the canvas. """
         self.view.create_order_ui(self.order)
 
+
     def add_item(self, menu_item):
-        """ Function that adds item to the "to be ordered" list when the order user interface is up.
+        """ Method that adds item to the "to be ordered" list when the order user interface is up.
 
         Function does this by adding the item through the Order object's .add_item() method, and
-        updates the order user_interface() by calling .create_ui().  """
+        updates the order user_interface by calling view.update().  """
         self.order.add_item(menu_item)
         self.view.update()
 
-    def update_order(self):
 
-        # Setting the "to be ordered" items to ordered status.
+    def update_order(self):
+        """ Method responsible for placing the requested orders into the PLACED status and set its __ordered attribute
+        to True. Furthermore, placed orders show up in the KitchenView window, and ServerView returns to the table
+        that was previously click on. """
+
+        # Setting the __ordered attribute to true, and advancing status to PLACED.
         self.order.place_new_orders()
 
         # Creating the table controller object and switching the controller back
@@ -126,19 +146,17 @@ class OrderController(Controller):
         table_controller = TableController(self.view, self.restaurant, self.table);
         self.view.set_controller(table_controller)
 
-        # Huh, this is a new one, but I'm guessing this also updates all the views, including RestaurantView
-        # and the KitchenView
+        # Updating the ServerView and KitchenView user interfaces
         self.restaurant.notify_views()
 
+
     def cancel_changes(self):
-        """ Function is responsible for cancelling an order in progress.
+        """ Method is responsible for cancelling an order whose items have yet to be placed (still in REQUESTED status).
 
-        NOT SURE IF THIS DOCSTRING WORKS FOR THIS METHOD. WILL CHECK.
+        Method is called when 'Cancel' button in order user interface is pressed. After pressing, returns ServerView
+        to the table associated with the chair whose order was just cancelled. """
 
-        This function gets called when the 'Cancel' button gets pressed while in the order user interface.
-        Pressing the button returns the view to the table associated with the chair whose order was just cancelled."""
-
-        # Removing the list of items under "to be ordered" status
+        # Removing the list of items in REQUESTED status/ whose __unordered is False
         self.order.remove_unordered_items()
 
         # Creating the table controller object and switching the controller back
@@ -149,40 +167,41 @@ class OrderController(Controller):
         # Updating the RestaurantView and KithcenView windows
         self.restaurant.notify_views()
 
-    # ---------------------- Code that Velasco has added -------------------------
 
     def remove_spec_item(self, this_item):
-        """ Method is responsible for removing a OrderItem this_item from the current order list -
-        happens when red 'X' button is pressed next to an order. """
+        """ Method is responsible for removing the specific OrderItem <this_item> from the current order list -
+        happens when red 'X' button is pressed next to an item in the order.
 
-        # removing the item
+        If item was in the PLACED status when cancelled, is also removed from the KitchenView window. """
+
+        # Removing the specific item from the order
         self.order.remove_item(this_item);
 
-        # updating the ui
+        # Updating the ServerView and KitchenView user interfaces
         self.restaurant.notify_views()
 
 
 
-
-
 class KitchenController(Controller):
-    """ Well, here's the newest Controller subclass that we need to implement :)). """
+    """ Controller associated with the KitchenView object.  """
 
 
     def create_ui(self):
-        """ Creates the user interface of the KitchenController. Damn, pretty half-assed docstring this is xD. """
+        """ Calling .create_ui() method calls the create_table_ui() back in the user interface.
+        Essentially draws the view of the kitchen and currently cooking orders onto the window dedicated for the
+        KitchenView. """
         self.view.create_kitchen_order_ui()
 
-    # TODO: implement a method to handle button presses on the KitchenView
 
-    def button_pressed(self, this_order_item, this_order):
-        """ Advances status of order item pressed, removes it if necessary, then updates the Kitchen user interface. """
+    def button_pressed(self, this_order_item):
+        """ Advances status of order item pressed and updates the KitchenView user interface. """
 
         # Advance the order item's status
         this_order_item.advance_status();
 
-        # Update the KitchenView UI and ServerViewUI
+        # Update the KitchenView user interface and ServerView userinterface
         self.restaurant.notify_views();
 
 
 
+# heyyyy okay that's this one cleaned up too. nice.
