@@ -11,15 +11,19 @@
     Lab Members: OCdt Al-Ansar Mohammed, OCdt Liethan Velasco.
 
 
-    Notes:
+    Notes:      To whoever who is marking this lab, these comments are a mix of notes that I've made for myself, and
+                notes that actually contain the explanations and thought processes behind certain functionalities
+                of the OORMS. There is no need to read all of them as it may result in an odd waste of your time.
+                Apologies in advance!
+
           1 - damn, the code in this lab is simply another iteration of the same code from lab 3. And guess what?
           I commented the hell out of lab 3 explaining the back end xD and you bet I'm gonna migrate the same
           comments into the code for this lab. Of course, not everything will be exact, but of course it'll be a
           great help indeed
 
-          2 - We ultimately chose to use the enum.IntEnum class for our enumerated constants, since it allows us to access the
-          values of our status constants with int(Status.this_status). This way it doesn't give us a warning unlike
-          using Status.this_status.value with the regular enum.Enum
+          2 - We ultimately chose to use the enum.IntEnum class for our enumerated constants, since it allows us to
+          access the values of our status constants with int(Status.this_status). This way it doesn't give us a warning
+          unlike using Status.this_status.value with the regular enum.Enum
             a - Strange. I noticed we don't need to import the enumerated status class from model.py/Status in order
             to use its enumerated constants within any other module.
 
