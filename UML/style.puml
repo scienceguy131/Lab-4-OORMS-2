@@ -1,0 +1,49 @@
+skinparam Shadowing false
+skinparam arrow {
+    Color black
+    Thickness 1.8
+}
+skinparam classBorderColor #777
+skinparam classBackgroundColor #ffffda
+skinparam packageBorderColor #333
+skinparam packageBackgroundColor #eeeef0
+skinparam classFontStyle bold
+skinparam CircledCharacter {
+    FontSize 10
+    Radius 7
+}
+
+hide footbox
+' useful but not used here...
+'autonumber "0"
+'skinparam LifeLineStrategy solid
+
+skinparam shadowing false
+skinparam arrowColor black
+skinparam sequenceLifeLine {
+    BorderColor grey
+    BackgroundColor #eeeeff
+}
+skinparam sequenceGroup {
+    bordercolor #666
+    borderthickness 1
+}
+skinparam sequenceParticipant underline
+skinparam sequenceParticipant {
+    BorderColor #333
+    BorderThickness 1
+}
+skinparam actorBorderColor #333
+
+' State diagrams
+hide empty description
+skinparam state {
+    BorderColor #777
+    BackgroundColor #ffffda
+}
+
+' Notes
+skinparam note {
+    BackgroundColor #ddeeff
+    BorderColor #333
+    }

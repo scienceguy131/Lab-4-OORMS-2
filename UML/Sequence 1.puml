@@ -1,0 +1,25 @@
+@startuml
+!include style.puml
+'https://plantuml.com/sequence-diagram
+'autonumber
+
+title OORMS:\nSequence Diagrams #3\nItem Cancel
+
+actor Server as server
+
+participant "view:\nServerView" as view
+participant "controller:\nOrderController" as controller
+participant "order:\nOrder" as order
+participant "restaurant:\nRestaurant" as rest
+participant "views:\nRestaurantViews" as views
+
+
+server -> ":view"
+
+
+'Alice -> Bob: Authentication Request
+'Bob --> Alice: Authentication Response
+
+'Alice -> Bob: Another authentication Request
+'Alice <-- Bob: another authentication Response
+@enduml
