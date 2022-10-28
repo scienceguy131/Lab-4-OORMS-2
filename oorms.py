@@ -12,11 +12,57 @@
 
 
     Notes:
-          - damn, the code in this lab is simply another iteration of the same code from lab 3. And guess what?
+          1 - damn, the code in this lab is simply another iteration of the same code from lab 3. And guess what?
           I commented the hell out of lab 3 explaining the back end xD and you bet I'm gonna migrate the same
           comments into the code for this lab. Of course, not everything will be exact, but of course it'll be a
           great help indeed
 
+          2 - We ultimately chose to use the enum.IntEnum class for our enumerated constants, since it allows us to access the
+          values of our status constants with int(Status.this_status). This way it doesn't give us a warning unlike
+          using Status.this_status.value with the regular enum.Enum
+            a - Strange. I noticed we don't need to import the enumerated status class from model.py/Status in order
+            to use its enumerated constants within any other module.
+
+          3 - Huh I think I figured out what this extra argument stuff does. It essentially ensures that each handler
+          created for a given object actually gets set to said object. For example, when creating the tables in the
+          restaurant view, well we have to make sure that when we touch a certain table, its handler opens up the
+          table interface for the table touched. That's what passing that extra argument of table_number which is
+          set to the current iterated value of ix into the table's handler is for. Without it, if we were just to
+          pass ix into the handler function (the dummy var looping through each table as they get drawn onto the canvas)
+          it results in all the handlers intended for each table getting associated with the last iterated through
+          table. Just like that pre-added comment, using the extra arg table_number captures the current value of ix
+          so that it gets associated with its intended table (lol I just said that twice). Now we know.
+
+          4 - Well I know it's written in the lab instructions, but I'm just going to re-iterate here how we're
+          going to implement the status functionality of the items placed. First of all, here's the progression of the
+          statuses:
+
+          REQUESTED -> PLACED -> COOKED -> READY -> SERVED.
+
+          The status is set to REQUESTED when the button of an order item is pressed, however has not yet been placed
+          (we know it's not placed since the circle to the left of the item's name is white). Here, the item can still
+          be cancelled.
+
+          The status thus becomes PLACED when the place order button is pressed, and its associated circle turns green.
+          Additionally, the item then gets added to the KitchenView window with a button next to it saying
+          "start cooking". The item can still be cancelled here.
+
+          The status of an item becomes COOKED when the "start cooking" button is pressed. The item can no longer be
+          cancelled. The button then reads "Mark as ready".
+
+          The status of an item turns READY when the "Mark as Ready" button is pressed. The button then reads
+          "Mark as Served".
+
+          The status of an item turns SERVED when the "Mark as Served" button is pressed. Once this happens, the
+          item in question is then removed from the KitchenView, simulating that it has left the kitchen and has
+          been served to the customer who has ordered it.
+
+
+          As previously mentioned, these status' were implemented using IntEnum constants, where REQUESTED is -1,
+          PLACED is 0, up until SERVED is 3. Doing so also provides the ability to easily set the button text of a
+          certain item, by storing the text in an array where the corresponding text of each status is placed at
+          the the respective indices (ie. "Mark as Served" at button_text[int(Status.COOKED)] ). It also allows more
+          far more elegant methods of status comparisons among a few of the class methods.
 
 
     Status:
@@ -27,61 +73,67 @@
         - Velasco and Mohammed (October 21, 2022) COMPLETED: Beginning sequence diagram #3
         - Velasco and Mohammed (October 23 2022)COMPLETED: Beginning implementation of sequence diagram #4
              - Implementing can be cancelled functionality for orders --> Adding REQUESTED Status
-        - Velasco (October __ 2022): Cleaning up the code
+        - Velasco COMPLETED (October 24 2022): Cleaning up the code
+            - (October 24, 2022) COMPLETED: Cleaning up oorms.py
+            - (October 24, 2022) COMPLETED: Cleaning up model.py
+            - (October 24, 2022) COMPLETED: Cleaning up controller.py
+
         - __ (October __ 2022): Writing the 4 tests
         - __ (October __ 2022): Writing the lab report
-
-
 
 """
 
 
-# --- Importing Libraries and Modules ---
+# --- Importing from Built-in Libraries ---
 
-# Importing from built-in libraries
 import math
 import tkinter as tk
 from abc import ABC
-import enum # remove ?
 
 
-# Importing from local modules
+# --- Importing from Local Modules ---
+
 from constants import *
 from controller import RestaurantController, KitchenController
-from model import Restaurant, Status #remove status question mark
+from model import Restaurant  # Refer to Notes 2a for a comment
 
+
+# --------------------- Defining Abstract Classes ---------------------
 
 class RestaurantView(tk.Frame, ABC):
-    """  An abstract superclass view. """
+    """  An abstract superclass for the views in the system. """
+
 
     def __init__(self, master, restaurant, window_width, window_height, controller_class):
-        """ Constructor to RestaurantView class. Sets up all the instance variables that
-                 creates the restaurant view through tkinter. """
+        """ Constructor to RestaurantView class. """
 
-        # Calling the inherited class's constructor
+        # Calling superclass constructor that gives us the window to put the view in
         super().__init__(master)
 
-        # Creating the window for the server view using tkinter methods and objects.
-        # (<root> gets passed through master arg, which is a TK() object from tkinter)
+        # Setting up the window for the server view using tkinter methods and objects.
+        # <root> gets passed through master arg, which is basically a window object from tkinter.
         self.grid()
-        self.canvas = tk.Canvas(self, width = window_width, height = window_height,
-                                borderwidth = 0, highlightthickness = 0)
+        self.canvas = tk.Canvas(self, width = window_width, height = window_height, borderwidth = 0,
+                                highlightthickness = 0)
         self.canvas.grid()
         self.canvas.update()
 
-        # Storing the restaurant object used in the program in an instance var
+        # Setting up instance var of the restaurant
         self.restaurant = restaurant
 
-        # Adding this RestaurantView object to the collection of views in the restaurant model
+        # Adding this RestaurantView object to collection of views within the restaurant model
         self.restaurant.add_view(self)
 
-        # Hmmm, this ones new. I'm guessing it does involve switching the controllers
+        # Initializing controller of this view to controller passed through <controller_class>
         self.controller = controller_class(self, restaurant)
         self.controller.create_ui()
 
 
+    # ---------------- Defining Methods ----------------
+
     def _make_button(self, text, action, size=BUTTON_SIZE, location=BUTTON_BOTTOM_RIGHT,
                      rect_style=BUTTON_STYLE, text_style=BUTTON_TEXT_STYLE):
+        """ Provided method that handles button creation in the views. """
         w, h = size
         x0, y0 = location
         box = self.canvas.create_rectangle(x0, y0, x0 + w, y0 + h, **rect_style)
@@ -91,28 +143,37 @@ class RestaurantView(tk.Frame, ABC):
 
 
     def update(self):
-        """ Calling this creates the user interface of the RestaurantView I suppose. """
+        """ Method calls current controller's create_ui() method which tells this view re-draw the user interface. """
         self.controller.create_ui()
 
 
     def set_controller(self, controller):
-        """ This switches the controller to whatever <controller> is passed through the arguments. """
+        """ Method switches current controller object to <controller> object passed through args. """
         self.controller = controller
 
 
 
+# --------------------- Defining Children Classes ---------------------
+
 class ServerView(RestaurantView):
-    """ Ouuu I see. We're making this inherit the RestaurantView abstract class. """
+    """ Inherits RestaurantView class.
+
+    This view appears on the left window when the system is run. View contains the entire view of the restaurant -
+    including the tables and chairs in it - and when pressed, shows the order views of the associated tables and chairs.
+    Same view found in Lab 3.
+    """
 
     def __init__(self, master, restaurant):
-        """ Constructor to ServerView - utilizes constructor from RestaurantView parent class. """
+        """ Constructor to ServerView. """
+
+        # Using solely superclass' constructor
         super().__init__(master, restaurant, SERVER_VIEW_WIDTH, SERVER_VIEW_HEIGHT, RestaurantController)
 
 
-    def create_restaurant_ui(self):
-        """ Ayyy copied this one docstring :)))
+    # ---------------- Defining Methods ----------------
 
-        This method gets called in the RestaurantController object.
+    def create_restaurant_ui(self):
+        """ This method gets called in the RestaurantController object.
 
         When called, uses tkinter's provided canvas methods to create the restaurant's user interface.
         More specifically, it calls the methods that draws out the tables, and defines the function handler
@@ -125,26 +186,25 @@ class ServerView(RestaurantView):
         # Creating empty list that will contain the IDs of the tables and chairs created.
         view_ids = []
 
-        # Taking table and chair data stored in self.restaurant object attribute, drawing the taables
-        # and chairs onto the canvas using self.draw_table(). Filling up view_ids while doing so.
+        # Taking table and chair data stored in self.restaurant object attribute, drawing the tables
+        # and chairs onto the canvas using protected method self._draw_table(). Filling up view_ids while doing so.
         for ix, table in enumerate(self.restaurant.tables):
-            table_id, seat_ids = self._draw_table(table, scale = RESTAURANT_SCALE) # <-- _draw_table() is a protected method now??
+            table_id, seat_ids = self._draw_table(table, scale = RESTAURANT_SCALE)
             view_ids.append((table_id, seat_ids))
 
-        # Creating a handler in the event a table is clicked on
+        # Creating a handler for when a table is clicked on
         for ix, (table_id, seat_ids) in enumerate(view_ids):
 
-            # Pre-written message here:
+            # Pre-written message here: (ayy I get what this means now)
             # §54.7 "extra arguments trick" in Tkinter 8.5 reference by Shipman
             # Used to capture current value of ix as table_index for use when
             # handler is called (i.e., when screen is clicked).
+            # Refer to Notes 3 for a comment on this.
 
-            # Lol in lab 3 I made a note for this part of the method
-            # Creating the handler function for when a table is touched.
+            # Creating the handler function for each table when it is touched.
             def table_touch_handler(_, table_number = ix):
                 self.controller.table_touched(table_number)
 
-            # Refer to Notes - Entry 2 for a comment on this...
             # Binding the table touch event to the tables on the user interface,
             # passing in the table_touch_handler through .tag_bind() wrapper function
             self.canvas.tag_bind(table_id, '<Button-1>', table_touch_handler)
@@ -154,6 +214,7 @@ class ServerView(RestaurantView):
             # up the user interface of the table said seat is associated with. Ha ha I figured it out :D)
             for seat_id in seat_ids:
                 self.canvas.tag_bind(seat_id, '<Button-1>', table_touch_handler)
+
 
     def create_table_ui(self, table):
         """ This method Is called within the TableController object.
@@ -168,13 +229,14 @@ class ServerView(RestaurantView):
         self.canvas.delete(tk.ALL)
 
         # Drawing out the clicked on table and its associated seats in the specified location defined
-        # in the constants module (the top left corner of the window lol)
-        table_id, seat_ids = self._draw_table(table, location = SINGLE_TABLE_LOCATION) # <-- draw_table() is protected
+        # in the constants module (in the top left corner of the window lol)
+        table_id, seat_ids = self._draw_table(table, location = SINGLE_TABLE_LOCATION)
 
         # Creating the handler function for each of the table's seats
         for ix, seat_id in enumerate(seat_ids):
 
-            # Creating the seat touched event handler
+            # Creating the seat touched event handler for each seat when touched.
+            # Refer to Notes 3 for a comment on this.
             def handler(_, seat_number = ix):
                 self.controller.seat_touched(seat_number)
 
@@ -182,13 +244,12 @@ class ServerView(RestaurantView):
             # seat handler function into this wrapper function.
             self.canvas.tag_bind(seat_id, '<Button-1>', handler)
 
-        # Creating the button that will close the current table user interface
+        # Creating the button that which closes the current table user interface
         # and return to the restaurant user interface.
-        self._make_button('Done', action = lambda event: self.controller.done()) # <-- Damn make_button() is also
-                                                                                 # protected lol
+        self._make_button('Done', action = lambda event: self.controller.done())
 
 
-    def _draw_table(self, table, location = None, scale = 1): # WE'VE MADE THIS INTO A PROTECTED (i think that's it)
+    def _draw_table(self, table, location = None, scale = 1):
         """ Uses Tkinter's provided canvas methods to draw a given table object out onto the canvas.
 
         <table> is the table object to be drawn, <location, defaulted to None> refers to where the table object
@@ -225,6 +286,7 @@ class ServerView(RestaurantView):
             # Returning table_id's and seat_id's
         return table_id, seat_ids
 
+
     def create_order_ui(self, order):
         """ This method is called within the OrderController object.
 
@@ -244,8 +306,9 @@ class ServerView(RestaurantView):
             x0 = margin
             y0 = margin + (h + margin) * ix
 
-            # Creating the handler function for each button
-            def handler(_, menuitem=item):
+            # Creating the handler function for each button.
+            # Refer to Notes 3 for a comment on this.
+            def handler(_, menuitem = item):
                 self.controller.add_item(menuitem)
 
             # Creating each button, and passing their handler into the wrapper function
@@ -270,19 +333,15 @@ class ServerView(RestaurantView):
             dot_style = ORDERED_STYLE if item.has_been_ordered() else NOT_YET_ORDERED_STYLE
             self.canvas.create_oval(x0 - DOT_SIZE - DOT_MARGIN, y0, x0 - DOT_MARGIN, y0 + DOT_SIZE, **dot_style)
 
-            # The code below is used to cancel an item made in an order
-            # --> Changed to only have the order be cancelled when in NOT ORDERED and PLACED states
+            # The code below is used to cancel an item made in an order if it is still in REQUESTED or PLACED state
             if item.can_be_cancelled():
 
-                # This is our job :))
+                # Handler that removes the specific object when 'X' button pressed.
+                # Refer to Notes 3 for a comment on this.
                 def handler(_, cancelled_item = item):
-
-                    #  Removing item from the unordered items
                     self.controller.remove_spec_item(cancelled_item);
 
-                    pass
-
-                # Making the button
+                # Making the cancel button
                 self._make_button('X', handler, size=CANCEL_SIZE, rect_style=CANCEL_STYLE,
                                   location=(x0 - 2*(DOT_SIZE + DOT_MARGIN), y0))
 
@@ -290,21 +349,26 @@ class ServerView(RestaurantView):
         self.canvas.create_text(x0, m + len(order.items) * h, text = f'Total: {order.total_cost():.2f}', anchor = tk.NW)
 
 
-class KitchenView(RestaurantView):
-    """ Ah this one's a new one for me.
 
-    I see that it inherits the RestaurantView abstract class. """
+class KitchenView(RestaurantView):
+    """ Inherits RestaurantView superclass.
+
+    View object that handles the "prep" of all orders placed. """
+
 
     def __init__(self, master, restaurant):
-        """ Constructor to the KitchenView class, which utilizes the parent class constructor.
-        Essentially creates another window purely dedicated to the kitchen. """
+        """ Constructor to the KitchenView class. """
+
+        # Using parent's constructor - basically creates another window for the kitchen.
         super().__init__(master, restaurant, KITCHEN_VIEW_WIDTH, KITCHEN_VIEW_HEIGHT, KitchenController)
 
-    def create_kitchen_order_ui(self):
-        """ This method gets called in the KitchenController object.
 
-        When called, uses tkinter's provided canvas methods to create the kitchen's user interface in
-        a separate window (I'm guessing). """
+    # ---------------- Defining Methods ----------------
+
+    def create_kitchen_order_ui(self):
+        """ This method gets called by the KitchenController object.
+
+        When called, uses tkinter's provided canvas methods to re-draw the kitchen's user interface this window. """
 
         # Clear the canvas as usual
         self.canvas.delete(tk.ALL)
@@ -313,52 +377,30 @@ class KitchenView(RestaurantView):
         line = 0
         for table_number, table in enumerate(self.restaurant.tables):
 
-            # Printing out the orders made of the given table
+            # Printing out the active orders made of all the tables
             if table.has_any_active_orders():
+
+                # Drawing table title
                 self.draw_text_line(f'Table {table_number}', K_LEFT, (line + 0.5) * K_LINE_HEIGHT)
                 line += 1
 
-                # Ahh so here's the part that creates the buttons to cook and process orders
-
-                print('\n', '-' * 50, '\n');
-
+                # For each item in the orders of each table...
                 for order in table.orders:
-
                     for item in order.items:
 
+                        # Draw out the item if it has been ordered and not yet served
                         if item.has_been_ordered() and not item.has_been_served():
-                            """ 
-                            
-                            Status of the OrderItems: PLACED -> COOKED -> READY -> SERVED
-                            
-                            When an item is first ordered, it gets put into the KitchenView with a 
-                            status of PLACED. 
-                            
-                            As the button to the left of it gets pressed, its status gets advanced.
-                            
-                            Once a given OrderItem object reaches the SERVED status, then it gets
-                            removed from the KitchenView on the next update of the UI.
-                            
-                            """
 
-                            # ---------------- Adding code here ----------------
+                            # Refer to Notes 4 for an explanation on the Status functionality of the items.
 
-                            # allows kitchen button text to change, but changes the wrong one
-                            #todo BUG - wrong status is changing
-                            button_options = ["START COOKING", "MARK AS READY", "MARK AS SERVED"]
-
-                            # debug statement
-                            print(item.details.name + ": ", item.get_status());
-
+                            # Setting the button text depending on current status value
+                            button_options = ["START COOKING", "MARK AS READY", "MARK AS SERVED"];
                             button_text = button_options[item.get_status().value]
 
-
-
-                            # Have the handler call the button_pressed() method of the KitchenController object,
-                            # passing in the item whose button has been pressed.
+                            # Creating the handler for when the text button for item in KitchenView is touched.
+                            # Refer to Notes 3 for a comment on this.
                             def handler(_, order_item = item):
-                                self.controller.button_pressed(order_item, order);
-
+                                self.controller.button_pressed(order_item);
 
                             # Creating the buttons for each of the orders
                             self._make_button(button_text, handler,
@@ -374,7 +416,10 @@ class KitchenView(RestaurantView):
         self.canvas.create_text(x, y, text = text, anchor = tk.W)
 
 
-# --------- Defining Functions -----------
+
+
+
+# --------- Defining Separate Functions -----------
 
 def _scale_and_offset(x0, y0, width, height, offset_x0, offset_y0, scale):
     """ Function to make the code for drawing more clean and organized. """
@@ -384,20 +429,30 @@ def _scale_and_offset(x0, y0, width, height, offset_x0, offset_y0, scale):
             (offset_y0 + y0 + height) * scale)
 
 
+
+
+# ----- Entry Point -----
+
 if __name__ == "__main__":
+
+    # Creating the restaurant object
     restaurant_info = Restaurant()
+
+    # Retrieving a window object from tkinter
     root = tk.Tk()
 
+    # Creating the ServerView object
     ServerView(root, restaurant_info)
     root.title('Server View v2')
     root.wm_resizable(0, 0)
 
+    # Creating the KitchenView object
     kitchen_window = tk.Toplevel()
     KitchenView(kitchen_window, restaurant_info)
     kitchen_window.title('Kitchen View v2')
     kitchen_window.wm_resizable(0, 0)
 
-    # nicely align the two windows
+    # Aligning the two windows with each other upon creation
     root.update_idletasks()
     kh = kitchen_window.winfo_height()
     kw = kitchen_window.winfo_width()
@@ -406,4 +461,8 @@ if __name__ == "__main__":
     sy = root.winfo_y()
     kitchen_window.geometry(f'{kw}x{kh}+{sx + sw + 10}+{sy}')
 
+    # Calling the mainloop of the program.
     root.mainloop()
+
+
+# nice. cleaned up and good to go.
