@@ -1,0 +1,32 @@
+@startuml
+!include style.puml
+
+
+title OORMS:\nSequence Diagram #3\n"Start Cooking" from "Ready" state
+actor Cook as cook
+
+participant "view :\n KitchenView" as view
+participant "controller :\n KitchenController" as controller
+participant "this_order :\n OrderItem" as this_order
+'participant "status :\n Status" as status
+' do we need this??
+
+cook -> view : [Mark as served] button pressed
+
+view -> controller : button_pressed(this_order)
+
+controller -> this_order : advance_status()
+
+this_order --> ":Status" **:\n int(status) + 1
+
+":Status" -> this_order : status = "SERVED"
+controller -> view  : create_kitchen_order_ui()
+    note left
+        Unlike the previous diagram, since
+        this is the last state for an order
+        when view is recreated this time
+        the served item will not be seen
+        in the kitchen view
+    end note
+
+@enduml
