@@ -1,7 +1,7 @@
 @startuml
 !include style.puml
 
-title OORMS:\nSequence Diagrams #2\nItem Cancel
+title OORMS:\nSequence Diagrams #2\nItem Cancel Pressed
 actor Server as server
 
 participant "view:\nServerView" as view
@@ -13,9 +13,7 @@ participant "views:\nRestaurantViews" as views
 
 
 server -> view : [X] button is pressed
-
 view -> controller : cancel_changes()
-
 controller -> order : remove_unordered_items()
 
 loop item in unordered_items
@@ -23,9 +21,7 @@ loop item in unordered_items
 end
 
 controller --> "table_controller:TableController" **: (views, restaurant, table)
-
 controller -> view : set_controller(table_controller)
-
 controller -> rest : notify_views()
 
 loop view in self.views
