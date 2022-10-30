@@ -1,7 +1,7 @@
 @startuml
 !include style.puml
 
-title OORMS:\nSequence Diagram #3\n"Mark as served" from COOKED state
+title OORMS:\nSequence Diagram #4\n"Mark as served" from COOKED state
 actor Cook as cook
 
 participant "view :\n KitchenView" as view

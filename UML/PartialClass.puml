@@ -11,8 +11,8 @@ class Restaurant <<abstract>> {
     add_views(view:RestaurantView)
     notify_views(view:RestaurantView))
 }
-'class TableController{}
-'class OrderController {}
+
+
 class KitchenController {
    create_ui()
    button_pressed(this_order_item:OrderItem)
@@ -34,7 +34,7 @@ class OrderItem{
 
 Controller <|-- KitchenController
 RestaurantView <|-- KitchenView
-Restaurant o-- "0..*"RestaurantView : views
+Restaurant o--> "0..*"RestaurantView : views
 
 
 @enduml
