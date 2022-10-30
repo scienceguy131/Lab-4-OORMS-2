@@ -164,7 +164,7 @@ class OrderController(Controller):
         table_controller = TableController(self.view, self.restaurant, self.table);
         self.view.set_controller(table_controller)
 
-        # Updating the RestaurantView and KithcenView windows
+        # Updating the RestaurantView and KitchenView windows
         self.restaurant.notify_views()
 
 

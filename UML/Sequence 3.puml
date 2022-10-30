@@ -1,7 +1,5 @@
 @startuml
 !include style.puml
-'https://plantuml.com/sequence-diagram
-
 
 title OORMS:\nSequence Diagram #3\n"Start Cooking" from "Ready" state
 actor Cook as cook

@@ -1,8 +1,9 @@
 import unittest
 from enum import Enum, auto
 
-from controller import RestaurantController, TableController, OrderController
-from model import Restaurant, OrderItem
+from controller import RestaurantController, TableController, OrderController, KitchenController
+
+from model import Restaurant, OrderItem, Status
 
 
 class UI(Enum):
@@ -17,7 +18,7 @@ class UI(Enum):
 
 class ServerViewMock:
     """
-    A non-graphical replacement for `oorms.ServerView`, used for testing. Allows
+    A non-graphical replacement for `oorms.ServerView`, used for testing. Allow
     tests to check what was the last user interface rendered. Fully replicates the
     public interface of `ServerView`. The `set_controller` and `update` methods
     are exact copies of those in `oorms.RestaurantView`.
@@ -46,12 +47,36 @@ class ServerViewMock:
         self.last_UI_created = (UI.ORDER, order)
 
 
+class KitchenViewMock:
+
+    def __init__(self, restaurant):
+        self.controller = None
+        self.UI = 0
+        self.restaurant = restaurant
+        self.set_controller(KitchenController(self,self.restaurant))
+        self.update()
+
+    def set_controller(self, controller):
+        self.controller = controller
+
+    def update(self):
+        self.controller.create_ui()
+        self.UI += 1
+
+    def create_kitchen_order_ui(self):
+        pass
+
+
 class OORMSTestCase(unittest.TestCase):
 
     def setUp(self):
         self.restaurant = Restaurant()
         self.view = ServerViewMock(self.restaurant)
         self.restaurant.add_view(self.view)
+
+        self.kitchen_view = KitchenViewMock(self.restaurant)
+        self.restaurant.add_view(self.kitchen_view)
+
 
     def test_initial_state(self):
         self.assertEqual(UI.RESTAURANT, self.view.last_UI_created)
@@ -151,3 +176,68 @@ class OORMSTestCase(unittest.TestCase):
         check_first_three_items(self.restaurant.menu_items, the_order.items)
         self.assertEqual(self.restaurant.menu_items[1], the_order.items[3].details)
         self.assertEqual(self.restaurant.menu_items[2], the_order.items[4].details)
+
+    def test_kitchen_initial_state(self):
+        self.assertIsInstance(self.kitchen_view.controller, KitchenController)
+        self.assertEqual(2, len(self.restaurant.views))
+
+    def test_press_x(self):
+        """
+        Orders an item, checks whether it has been ordered and if its status is correct.
+        Cancels the item (as though a server pressed X), then tests whether the item exists
+        and whether the kitchen UI has been updated after the fact
+        """
+        the_order, the_menu_item = self.order_an_item()
+        order_item = the_order.items[0]
+
+        self.kitchen_view.controller.button_pressed(order_item)
+
+        self.assertEqual(order_item.status, Status.PLACED)
+        self.assertEqual(2, self.kitchen_view.UI)
+
+        self.view.controller.cancel_changes()
+
+        self.assertEqual(len(the_order.items), 0)
+        self.assertEqual(3, self.kitchen_view.UI)
+
+    def test_start_cooking(self):
+        """
+        Orders an item and advances the item to PLACED and then to COOKED
+        checks whether the state has been correctly updated
+        and that the item cannot be cancelled
+        also checks that the kitchen UI has been updated the correct amount of times
+        """
+        the_order, the_menu_item = self.order_an_item()
+        order_item = the_order.items[0]
+
+        self.assertEqual(1, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+        self.assertEqual(2, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+
+        self.assertEqual(order_item.status, Status.COOKED)
+        self.assertFalse(order_item.can_be_cancelled())
+        self.assertEqual(3, self.kitchen_view.UI)
+
+    def test_mark_as_served(self):
+        """
+        Orders an item and advances the item to PLACED, to COOKED, to READY, and to SERVED
+        checks whether the state has been correctly updated and
+        also checks that the kitchen UI has been updated the correct amount of times
+        """
+        the_order, the_menu_item = self.order_an_item()
+        order_item = the_order.items[0]
+
+        self.assertEqual(1, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+        self.assertEqual(2, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+        self.assertEqual(3, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+        self.assertEqual(4, self.kitchen_view.UI)
+        self.kitchen_view.controller.button_pressed(order_item)
+
+        self.assertEqual(order_item.status, Status.SERVED)
+        self.assertFalse(order_item.can_be_cancelled())
+        self.assertEqual(5, self.kitchen_view.UI)
+
