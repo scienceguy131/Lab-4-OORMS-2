@@ -1,7 +1,5 @@
 @startuml
 !include style.puml
-'https://plantuml.com/sequence-diagram
-
 
 title OORMS:\nSequence Diagram #3\n"Start Cooking" from "Ready" state
 actor Cook as cook
@@ -13,17 +11,12 @@ participant "this_order :\n OrderItem" as this_order
 
 
 cook -> view : [Start Cooking] button pressed
-
 view -> controller : button_pressed(this_order)
-
 controller -> this_order : advance_status()
 
 this_order --> ":Status" **:\n int(status) + 1
-
 ":Status" -> this_order : status = "COOKED"
+
 controller -> view : create_kitchen_order_ui()
-
-
-
 
 @enduml
