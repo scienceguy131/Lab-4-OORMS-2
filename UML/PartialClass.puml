@@ -1,0 +1,40 @@
+@startuml
+!include style.puml
+
+
+title **OORMS**\n Partial Class Diagram\n *Key changes from Lab 3 Diagram*
+
+'class ServerView {}
+class Controller <<abstract>>{}
+class RestaurantView <<abstract>> {}
+class Restaurant <<abstract>> {
+    add_views(view:RestaurantView)
+    notify_views(view:RestaurantView))
+}
+'class TableController{}
+'class OrderController {}
+class KitchenController {
+   create_ui()
+   button_pressed(this_order_item:OrderItem)
+}
+
+class KitchenView{
+    __init__(master:tk.Tk , restaurant:Restaurant)
+    create_kitchen_order_ui()
+    draw_text_line()
+    }
+
+class OrderItem{
+    __init__(menu_item:MenuItem)
+    has_been_served():Bool
+    can_be_cancelled():Bool
+    advance_status()
+}
+
+
+Controller <|-- KitchenController
+RestaurantView <|-- KitchenView
+Restaurant o-- "0..*"RestaurantView : views
+
+
+@enduml
