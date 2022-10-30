@@ -1,7 +1,7 @@
 @startuml
 !include style.puml
 
-title OORMS:\nSequence Diagrams #2 \nItem Cancel - notify_views() \n
+title OORMS:\nSequence Diagram - notify_views() \n
 
 participant "controller:\nOrderController" as order_controller
 participant "restaurant:\nRestaurant" as restaurant

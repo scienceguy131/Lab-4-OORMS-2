@@ -65,7 +65,7 @@
           As previously mentioned, these status' were implemented using IntEnum constants, where REQUESTED is -1,
           PLACED is 0, up until SERVED is 3. Doing so also provides the ability to easily set the button text of a
           certain item, by storing the text in an array where the corresponding text of each status is placed at
-          the the respective indices (ie. "Mark as Served" at button_text[int(Status.COOKED)] ). It also allows more
+          the respective indices (ie. "Mark as Served" at button_text[int(Status.COOKED)] ). It also allows more
           far more elegant methods of status comparisons among a few of the class methods.
 
 
