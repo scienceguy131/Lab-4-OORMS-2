@@ -12,6 +12,12 @@ class Restaurant <<abstract>> {
     notify_views(view:RestaurantView))
 }
 
+class ServerView {
+    ...
+    remove_spec_item(cancelled_item:OrderItem)
+
+}
+
 
 class KitchenController {
    create_ui()
@@ -25,6 +31,7 @@ class KitchenView{
     }
 
 class OrderItem{
+    status:Status
     __init__(menu_item:MenuItem)
     has_been_served():Bool
     can_be_cancelled():Bool
