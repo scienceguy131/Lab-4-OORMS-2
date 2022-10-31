@@ -12,12 +12,9 @@ class Restaurant <<abstract>> {
     notify_views(view:RestaurantView))
 }
 
-class ServerView {
-    ...
-    remove_spec_item(cancelled_item:OrderItem)
-
+class OrderController {
+    remove_spec_item(this_item:OrderItem)
 }
-
 
 class KitchenController {
    create_ui()
@@ -38,7 +35,7 @@ class OrderItem{
     advance_status()
 }
 
-
+Controller <|-- OrderController
 Controller <|-- KitchenController
 RestaurantView <|-- KitchenView
 Restaurant o--> "0..*"RestaurantView : views
